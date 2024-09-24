@@ -1,10 +1,13 @@
-import React from 'react'
-import { Button } from '../ui/button'
+import React from "react";
+import { Button } from "../ui/button";
 
-function AddToCart({ productId }:{ productId: string } ) {
+function AddToCart({ productId }: { productId: string }) {
+  console.log(productId);
   return (
-    <Button className='capitalize mt-8' size='lg'>add to cart</Button>
-  )
+    <Button className="capitalize mt-8" size="lg">
+      add to cart
+    </Button>
+  );
 }
 
-export default AddToCart
+export default AddToCart;
