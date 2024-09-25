@@ -15,7 +15,7 @@ function Navbar() {
         https://nextjs.org/docs/messages/missing-suspense-with-csr-bailout
         */}
         <Suspense>
-          {/* <NavSearch /> */}
+          <NavSearch />
         </Suspense>
         <div className='flex gap-4 items-center'>
           <CartButton />
