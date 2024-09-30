@@ -55,6 +55,7 @@ export function validateWithZodSchema<T>(
   return result.data;
 }
 
+
 export const reviewSchema = z.object({
   productId: z.string().refine((value) => value !== '', {
     message: 'Product ID cannot be empty',
@@ -75,3 +76,6 @@ export const reviewSchema = z.object({
     .min(10, { message: 'Comment must be at least 10 characters long' })
     .max(1000, { message: 'Comment must be at most 1000 characters long' }),
 });
+
+
+
