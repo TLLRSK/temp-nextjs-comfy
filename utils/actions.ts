@@ -6,12 +6,10 @@ import { redirect } from 'next/navigation';
 import {
   imageSchema,
   productSchema,
-  reviewSchema,
   validateWithZodSchema,
 } from './schemas';
 import { deleteImage, uploadImage } from './supabase';
 import { revalidatePath } from 'next/cache';
-import { Cart } from '@prisma/client';
 const getAuthUser = async () => {
   const user = await currentUser();
   if (!user) redirect('/');
