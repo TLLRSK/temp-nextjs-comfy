@@ -9,7 +9,6 @@ import React from 'react'
 
 async function SingleProductPage({params} : {params: {id: string}}) {
   const product = await fetchSingleProduct(params.id);
-  console.log(product)
   const { name, image, company, description, price } = product;
   const dollarsAmount = formatCurrency(price);
 

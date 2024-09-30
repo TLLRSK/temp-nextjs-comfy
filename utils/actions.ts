@@ -9,7 +9,6 @@ import { revalidatePath } from 'next/cache';
 
 
 const renderError = (error: unknown): { message: string } => {
-  console.log(error);
   return {
     message: error instanceof Error ? error.message : 'An error occurred',
   };
@@ -157,5 +156,83 @@ export const updateProductImageAction = async (
   prevState: any,
   formData: FormData
 ) => {
+  await getAuthUser();
+  try {
+    const image = formData.get('image') as File;
+    const productId = formData.get('id') as string;
+    const oldImageUrl = formData.get('url') as string;
+
+    const validatedFile = validateWithZodSchema(imageSchema, { image });
+
+    const fullPath = await uploadImage(validatedFile.image);
+    await deleteImage(oldImageUrl);
+    await db.product.update({
+      where: {
+        id: productId,
+      },
+      data: {
+        image: fullPath,
+      },
+    });
+    revalidatePath(`/admin/products/${productId}/edit`);
+  } catch(error) {
+    return renderError(error);
+  }
   return { message: 'Product Image updated successfully' };
 };
+
+export const fetchFavoriteId = async({ productId }: { productId: string}) => {
+  const user = await getAuthUser();
+  const favorite = await db.favorite.findFirst({
+    where: {
+      productId,
+      clerkId: user.id,
+    },
+    select: {
+      id: true,
+    }
+  });
+  return favorite?.id || null;
+}
+
+export const toggleFavoriteAction = async (prevState: {
+  productId: string;
+  favoriteId: string | null;
+  pathname: string;
+}) => {
+  const user = await getAuthUser();
+  const { productId, favoriteId, pathname } = prevState;
+  try {
+    if(favoriteId) {
+      await db.favorite.delete({
+        where: {
+          id: favoriteId,
+        },
+      });
+    } else {
+      await db.favorite.create({
+        data: {
+          productId: productId,
+          clerkId: user.id,
+        }
+      })
+    }
+    revalidatePath(pathname);
+    return { message: 'Toggle Favorite Action' } 
+  } catch (error) {
+    return renderError(error)
+  }
+}
+
+export const fetchUserFavorites = async () => {
+  const user = await getAuthUser();
+  const favorites = await db.favorite.findMany({
+    where: {
+      clerkId: user.id,
+    },
+    include: {
+      product: true,
+    },
+  });
+  return favorites;
+}
